@@ -1,33 +1,59 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { createProfile } from '../../actions/profile';
+import { getCurrentProfile } from '../../actions/profile';
 
-const EditProfile = ({ createProfile, history, profile: { profile } }) => {
+const EditProfile = ({
+  getCurrentProfile,
+  createProfile,
+  history,
+  profile: { profile, loading },
+}) => {
+  useEffect(() => {
+    getCurrentProfile();
+
+    setFormData({
+      status: loading || !profile.status ? '' : profile.status,
+      company: loading || !profile.company ? '' : profile.company,
+      website: loading || !profile.website ? '' : profile.website,
+      location: loading || !profile.location ? '' : profile.location,
+      bio: loading || !profile.bio ? '' : profile.bio,
+      githubusername:
+        loading || !profile.githubusername ? '' : profile.githubusername,
+      skills: loading || !profile.skills ? '' : profile.skills.join(''),
+      youtube: loading || !profile.social ? '' : profile.social.youtube,
+      facebook: loading || !profile.social ? '' : profile.social.facebook,
+      twitter: loading || !profile.social ? '' : profile.social.twitter,
+      instagram: loading || !profile.social ? '' : profile.social.instagram,
+      linkedin: loading || !profile.social ? '' : profile.social.linkedin,
+    });
+  }, [loading]);
+
   const [formData, setFormData] = useState({
-    company: profile.company,
-    website: profile.website,
-    location: profile.location,
-    bio: profile.bio,
-    status: profile.status,
-    githubusername: profile.githubusername,
-    skills: profile.skills,
-    youtube: profile.youtube,
-    facebook: profile.facebook,
-    twitter: profile.twitter,
-    instagram: profile.instagram,
-    linkedin: profile.linkedin,
+    company: '',
+    website: '',
+    location: '',
+    bio: '',
+    status: '',
+    githubusername: '',
+    skills: '',
+    youtube: '',
+    facebook: '',
+    twitter: '',
+    instagram: '',
+    linkedin: '',
   });
 
   const [displaySocialInputs, toggleSocialInputs] = useState(false);
 
   const {
-    status,
     company,
-    website,
     location,
+    website,
     bio,
+    status,
     githubusername,
     skills,
     youtube,
@@ -36,14 +62,12 @@ const EditProfile = ({ createProfile, history, profile: { profile } }) => {
     instagram,
     linkedin,
   } = formData;
-
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    // createProfile(formData, history, profile ? true : false);
     createProfile(formData, history);
   };
 
@@ -230,6 +254,6 @@ const mapStateToProps = (state) => ({
   profile: state.profile,
 });
 
-export default connect(mapStateToProps, { createProfile })(
+export default connect(mapStateToProps, { createProfile, getCurrentProfile })(
   withRouter(EditProfile)
 );
